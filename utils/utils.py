@@ -228,19 +228,22 @@ def get_ai_insights(observed_data, predicted_data, polls, weather_data, user_inp
     Bold important things
     **Ensure proper Markdown formatting and use a normal font size.**
     **Avoid headings, introductions, and conclusions.**
-    Give concise output. Maximum 2 points n each category
+    Give concise output. Maximum 2 points n each category. don't give more htan 200 words.
     never say Implement a pollutant monitoring system 
     think of something tailored for the situation with pollutants, aqi, weather.
     use numbers and indicators, also round of big decimals to 2 place
     """
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        # model="mixtral-8x7b-32768",
+        # model="llama-3.3-70b-versatile",
+        # model="llama-3.3-70b-specdec",
+        model="gemma2-9b-it",
         messages=[
             {"role": "system", "content": "You are an AI assistant specializing in air quality analysis. Provide concise, specific, and innovative responses. think of something tailored for the situation with pollutants, aqi, weather. If AQI is high, give health warnings and mitigation steps. Avoid irrelevant topics. Only provide points—no starting/ending niceties. Assume the tips are for a cloth factory owner."},
             {"role": "user", "content": prompt}
         ],
-        temperature=1.6,
+        temperature=1.3,
         max_completion_tokens=512,
         top_p=1,
         stream=False

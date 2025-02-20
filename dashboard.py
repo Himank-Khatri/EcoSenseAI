@@ -1,6 +1,8 @@
 import streamlit as st
 from datetime import datetime
 from utils.utils import load_data, load_best_model, render_graph, show_pollutants, get_aqi_category, get_weather_info, get_ai_insights
+import folium
+from streamlit_folium import folium_static, st_folium
 
 with st.sidebar:
     st.header("Facility Profile")
@@ -54,7 +56,31 @@ with col2:
     with ai_container:
         st.markdown("<hr>", unsafe_allow_html=True)
         st.markdown("### 🔍 AI Insights & Recommendations")
-        # with st.spinner("Generating AI insights..."):
-            # ai_insights = get_ai_insights(aqi_data, predictedions, polls, weather_data, user_input)
+        with st.spinner("Generating AI insights..."):
+            ai_insights = get_ai_insights(aqi_data, predictedions, polls, weather_data, user_input)
 
-        # st.markdown(ai_insights, unsafe_allow_html=True)
+        st.markdown(ai_insights, unsafe_allow_html=True)
+
+# 4bbc8e207d0f57ada1feaa78923d563262f901dc
+
+
+st.write("")
+st.subheader("Air Quality Map")
+
+TOKEN_ID = "4bbc8e207d0f57ada1feaa78923d563262f901dc"  
+lat, lon = 12.9716, 77.5946  # Bangalore coordinates
+zoom_level = 12
+
+m = folium.Map(location=[lat, lon], zoom_start=zoom_level)
+
+aq_url = f"https://tiles.aqicn.org/tiles/usepa-aqi/{{z}}/{{x}}/{{y}}.png?token={TOKEN_ID}"
+folium.TileLayer(
+    tiles=aq_url,
+    attr='Air Quality Tiles &copy; <a href="http://waqi.info">waqi.info</a>',
+    name="AQI Overlay",
+).add_to(m)
+folium.LayerControl().add_to(m)
+
+c1, c2, c3 = st.columns([1,10,1])
+with c2:
+    folium_static(m, width=1200, height=600)

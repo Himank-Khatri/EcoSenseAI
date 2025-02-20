@@ -11,4 +11,6 @@ flask
 streamlit
 st-pages
 groq
+folium
+stremalit_folium
 # -e .
