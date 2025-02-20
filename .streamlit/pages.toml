@@ -1,0 +1,9 @@
+# .streamlit/pages.toml
+
+[[pages]]
+path = "dashboard.py"
+name = "EcoSense"
+
+[[pages]]
+path = "chatbot.py"
+name = "EcoBot"

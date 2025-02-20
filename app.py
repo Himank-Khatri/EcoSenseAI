@@ -1,6 +1,6 @@
 import streamlit as st
 from datetime import datetime
-from utils import load_data, load_best_model, render_graph, show_pollutants, get_aqi_category, get_weather_info
+from utils.utils import load_data, load_best_model, render_graph, show_pollutants, get_aqi_category, get_weather_info
 
 st.set_page_config(page_title='EcoSenseAI', layout='wide')
 
