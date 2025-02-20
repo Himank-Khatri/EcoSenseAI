@@ -11,9 +11,6 @@ from src.pipeline.prediction_pipeline import recursive_forecast
 st.set_page_config(page_title='EcoSenseAI', layout='wide')
 st.session_state['hour'] = 25
 
-st.header("EcoSenseAI")
-st.write("Know what's in the air before it's there!")
-
 @st.cache_resource
 def load_best_model(artifacts_dir="artifacts/"):
     results_path = os.path.join(artifacts_dir, "model_results.json")
@@ -44,7 +41,7 @@ def load_best_model(artifacts_dir="artifacts/"):
     with open(best_model_path, "rb") as model_file:
         model = pickle.load(model_file)
     
-    st.success(f"Loaded best model: {best_model_name} ({best_model_path}) with MAE {best_model_info.get('mae', 'N/A')}")
+    # st.success(f"Loaded best model: {best_model_name} with MAE {best_model_info.get('mae', 'N/A')}")
     return model
 
 @st.cache_resource()
@@ -70,17 +67,22 @@ def render_graph(data):
 
     last = data.drop('AQI', axis=1).iloc[-1]
     predictions = recursive_forecast(model, last, n_steps=7)
-    st.write(predictions)
+    # st.write(predictions)
     
 def show_pollutants(data):
-    pollutants = ["PM2.5", "PM10", "NO2", "SO2", "CO", "O3"]
-    
-    # Ensure we're working with a single row
-    latest_values = data.iloc[-1:]  # Keep it as a DataFrame slice
+    pollutants = {
+        "PM2.5": 50,   
+        "PM10": 100,
+        "NO2": 40,
+        "SO2": 20,
+        "CO": 10,
+        "O3": 60
+    }
 
-    for pollutant in pollutants:
-        value = latest_values[pollutant].values[0]  # Extract scalar
-        max_value = 100  # Define max threshold for progress bar scaling
+    latest_values = data.iloc[-1:]  
+
+    for pollutant, max_value in pollutants.items():
+        value = latest_values[pollutant].values[0] 
         progress_value = min(value / max_value, 1.0)  
 
         st.write(f"##### {pollutant}: {value:.2f} µg/m³")  
@@ -92,8 +94,16 @@ def main():
     aqi_data, poll_data = load_data()
 
     with col1:  
+        st.header("EcoSenseAI")
+        st.write("Know what's in the air before it's there!")
+        st.write("")
+        st.write("")
         render_graph(aqi_data)
     with col2:
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("### Pollutants")
         show_pollutants(poll_data)
 
 if __name__ == '__main__':
