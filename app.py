@@ -9,7 +9,7 @@ import streamlit as st
 from src.pipeline.prediction_pipeline import recursive_forecast
 
 st.set_page_config(page_title='EcoSenseAI', layout='wide')
-st.session_state['hour'] = 1
+st.session_state['hour'] = 25
 
 st.header("EcoSenseAI")
 st.write("Know what's in the air before it's there!")
@@ -54,7 +54,7 @@ def load_data(aqi_filepath='artifacts/test.csv', pollutants_filepath='artifacts/
     
     hour = st.session_state['hour']
     aqi_data = aqi_df[hour-1:hour+13].copy()
-    poll_data = poll_df.iloc[hour+12].copy
+    poll_data = poll_df.iloc[hour+12:hour+13].copy()
 
     st.session_state['hour'] += 1
     
@@ -73,8 +73,20 @@ def render_graph(data):
     st.write(predictions)
     
 def show_pollutants(data):
-    st.write("poll")
+    pollutants = ["PM2.5", "PM10", "NO2", "SO2", "CO", "O3"]
     
+    # Ensure we're working with a single row
+    latest_values = data.iloc[-1:]  # Keep it as a DataFrame slice
+
+    for pollutant in pollutants:
+        value = latest_values[pollutant].values[0]  # Extract scalar
+        max_value = 100  # Define max threshold for progress bar scaling
+        progress_value = min(value / max_value, 1.0)  
+
+        st.write(f"##### {pollutant}: {value:.2f} µg/m³")  
+        st.progress(progress_value) 
+
+
 def main():
     col1, col2 = st.columns([1,1])
     aqi_data, poll_data = load_data()
