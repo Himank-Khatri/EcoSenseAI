@@ -1,12 +1,17 @@
 import os
 import json
+import groq
 import pickle
 import pandas as pd
 import streamlit as st
 import altair as alt
 from datetime import datetime
+from sklearn.model_selection import train_test_split
 from weather import fetch_weather_data, interpret_weather_code
 from src.pipeline.prediction_pipeline import recursive_forecast
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+GROQ_API_KEY = "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"
 
 # ----------------------- Model Loading -----------------------
 def load_best_model(artifacts_dir="artifacts/"):
@@ -33,11 +38,67 @@ def load_best_model(artifacts_dir="artifacts/"):
 
     with open(best_model_path, "rb") as model_file:
         return pickle.load(model_file)
+    
+#---------------------------------------------------------------
+def retrain_models(X_df, y_df, artifacts_dir="artifacts/"):
+    """
+    Retrains models using new data, updates performance metrics, and saves them.
+    """
+    results_path = os.path.join(artifacts_dir, "model_results.json")
+
+    if not os.path.exists(results_path):
+        raise FileNotFoundError(f"{results_path} not found.")
+
+    with open(results_path, "r") as file:
+        results = json.load(file)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_df, y_df, test_size=0.2, random_state=42)
+
+    updated_results = {}
+
+    for model_name, model_info in results.items():
+        model_path = model_info.get("model_path", "")
+
+        if not os.path.exists(model_path):
+            print(f"Model file not found: {model_path}, skipping {model_name}.")
+            continue
+
+        with open(model_path, "rb") as model_file:
+            model = pickle.load(model_file)
+
+
+        model.fit(X_train, y_train)
+
+        y_pred = model.predict(X_test)
+        mae = mean_absolute_error(y_test, y_pred)
+        rmse = mean_squared_error(y_test, y_pred)
+
+        with open(model_path, "wb") as model_file:
+            pickle.dump(model, model_file)
+
+
+        updated_results[model_name] = {
+            "model_path": model_path,
+            "mae": round(mae, 2),
+            "rmse": round(rmse, 2)
+        }
+
+    with open(results_path, "w") as file:
+        json.dump(updated_results, file, indent=4)
+
+    st.info("Trained new models!")
 
 # ----------------------- Data Loading -----------------------
 def load_data(hour, aqi_filepath='artifacts/test.csv', pollutants_filepath='artifacts/test_pollutants.csv'):
+
     try:
         aqi_df = pd.read_csv(aqi_filepath)
+        # if hour > 50:
+        #     df = aqi_df.iloc[:50]
+        #     X_df = df.drop('Value', axis=1)
+        #     y_df = df['Value']
+        #     retrain_models(X_df, y_df)
+
         poll_df = pd.read_csv(pollutants_filepath)
 
         aqi_data = aqi_df[hour-1:hour+13].copy()
@@ -100,6 +161,8 @@ def render_graph(data):
     )
     st.altair_chart(chart, use_container_width=True)
 
+    return full_df
+
 # ----------------------- Pollutants Data Display -----------------------
 def show_pollutants(data):
     pollutants = {"PM2.5": 50, "PM10": 100, "NO2": 40, "SO2": 20, "CO": 10, "O3": 60}
@@ -111,6 +174,8 @@ def show_pollutants(data):
         progress_value = min(value / max_value, 1.0)
         st.write(f"##### {pollutant}: {value:.2f} µg/m³")
         st.progress(progress_value)
+    
+    return latest_values
 
 
 def get_weather_info():
@@ -127,3 +192,58 @@ def get_weather_info():
         st.write(f"🌧 Precipitation: {weather_data['precipitation']} mm")
     else:
         st.write("⚠ Unable to fetch weather data.")
+
+    return weather_data
+
+def get_ai_insights(observed_data, predicted_data, polls, weather_data, user_input):
+    """Fetch AI-generated insights based on observed AQI, predicted AQI, and weather conditions."""
+    client = groq.Client(api_key=GROQ_API_KEY)
+
+    # Ensure we have valid data
+    # observed_aqi = observed_data["Value"].iloc[-1] if not observed_data.empty else "N/A"
+    # predicted_aqi = predicted_data["Value"].iloc[-1] if not predicted_data.empty else "N/A"
+    temperature = weather_data.get('temperature', 'N/A')
+    humidity = weather_data.get('humidity', 'N/A')
+    wind_speed = weather_data.get('wind_speed', 'N/A')
+
+    # Construct prompt dynamically
+    prompt = f"""
+
+    You are a sustainability consultant of a firm with these details: {user_input}
+
+    The current observed AQI is {observed_data}, and the predicted AQI is {predicted_data} for the next hours.
+    Pollutants:
+    {polls}
+    
+    Weather conditions:
+    - Temperature: {temperature}°C
+    - Humidity: {humidity}%
+    - Wind Speed: {wind_speed} km/h
+
+    Based on this data, provide brief, **actionable safety recommendations**:
+    - Health precautions for workers
+    - Practical measures to improve air quality (with context of the firm)
+
+    **Format the response in bullet points.**
+    Bold important things
+    **Ensure proper Markdown formatting and use a normal font size.**
+    **Avoid headings, introductions, and conclusions.**
+    Give concise output. Maximum 2 points n each category
+    never say Implement a pollutant monitoring system 
+    think of something tailored for the situation with pollutants, aqi, weather.
+    use numbers and indicators, also round of big decimals to 2 place
+    """
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {"role": "system", "content": "You are an AI assistant specializing in air quality analysis. Provide concise, specific, and innovative responses. think of something tailored for the situation with pollutants, aqi, weather. If AQI is high, give health warnings and mitigation steps. Avoid irrelevant topics. Only provide points—no starting/ending niceties. Assume the tips are for a cloth factory owner."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=1.6,
+        max_completion_tokens=512,
+        top_p=1,
+        stream=False
+    )
+
+    return response.choices[0].message.content if response.choices else "No insights available."

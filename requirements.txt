@@ -9,4 +9,6 @@ catboost
 xgboost
 flask
 streamlit
+st-pages
+groq
 # -e .
