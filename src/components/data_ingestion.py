@@ -30,11 +30,13 @@ class DataIngestion:
             df.to_csv(self.ingestion_config.raw_data_path, index=False, header=True)
 
             logging.info("Train test split initiated")
+
             split_ratio = 0.8
             split_index = int(len(df) * split_ratio)
-
             train_df = df.iloc[:split_index]
             test_df = df.iloc[split_index:]
+            train_df.to_csv(self.ingestion_config.train_data_path, index=False, header=True)
+            test_df.to_csv(self.ingestion_config.test_data_path, index=False, header=True)
             
             logging.info("Data ingestion completed.")
 
@@ -47,4 +49,3 @@ class DataIngestion:
 if __name__ == '__main__':
     obj = DataIngestion()
     train_data, test_data = obj.initiate_data_ingestion()
-    print(train_data.shape, test_data.shape)
