@@ -44,11 +44,20 @@ class DataIngestionTransformation:
 
             split_ratio = 0.8
             split_index = int(len(dataset) * split_ratio)
+
             train_df = dataset.iloc[:split_index]
-            test_df = dataset.iloc[split_index:]    
+            train_pollutants = train_df[['PM2.5', 'PM10', 'NO2', 'SO2', 'CO', 'O3']]
+            train_df = train_df.drop(columns=['PM2.5', 'PM10', 'NO2', 'SO2', 'CO', 'O3'], axis=1)
+
+
+            test_df = dataset.iloc[split_index:]
+            test_pollutants = test_df[['PM2.5', 'PM10', 'NO2', 'SO2', 'CO', 'O3']]
+            test_df = test_df.drop(columns=['PM2.5', 'PM10', 'NO2', 'SO2', 'CO', 'O3'], axis=1)
 
             train_df.to_csv('artifacts/train.csv', header=True, index=False)
             test_df.to_csv('artifacts/test.csv', header=True, index=False)
+            train_pollutants.to_csv('artifacts/train_pollutants.csv', header=True)
+            test_pollutants.to_csv('artifacts/test_pollutants.csv', header=True)
 
 
             return train_df, test_df
@@ -58,7 +67,7 @@ class DataIngestionTransformation:
             raise CustomException(e, sys)
     
 if __name__ == '__main__':
-    obj = DataIngestionTransformation('artifacts/data.csv')
+    obj = DataIngestionTransformation('notebook/data/pollutants_data.csv')
     train_data, test_data = obj.initiate_data_ingestion_transformation()
 
     model_trainer = ModelTrainer()

@@ -2,8 +2,8 @@ import sys
 import numpy as np
 from src.logger import logging
 from src.exception import CustomException
-from src.components.data_transformation import DataTransformationConfig
-from src.components.model_trainer import ModelTrainerConfig
+# from src.components.data_transformation import DataTransformationConfig
+# from src.components.model_trainer import ModelTrainerConfig
 from src.utils import load_object
 import pandas as pd
 
