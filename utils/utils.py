@@ -236,9 +236,9 @@ def get_ai_insights(observed_data, predicted_data, polls, weather_data, user_inp
 
     response = client.chat.completions.create(
         # model="mixtral-8x7b-32768",
-        # model="llama-3.3-70b-versatile",
+        model="llama-3.3-70b-versatile",
         # model="llama-3.3-70b-specdec",
-        model="gemma2-9b-it",
+        # model="gemma2-9b-it",
         messages=[
             {"role": "system", "content": "You are an AI assistant specializing in air quality analysis. Provide concise, specific, and innovative responses. think of something tailored for the situation with pollutants, aqi, weather. If AQI is high, give health warnings and mitigation steps. Avoid irrelevant topics. Only provide points—no starting/ending niceties. Assume the tips are for a cloth factory owner."},
             {"role": "user", "content": prompt}

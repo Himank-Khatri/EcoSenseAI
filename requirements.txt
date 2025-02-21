@@ -13,4 +13,5 @@ st-pages
 groq
 folium
 stremalit_folium
+ollama
 # -e .

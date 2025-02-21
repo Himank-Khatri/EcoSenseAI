@@ -11,3 +11,11 @@ name = "EcoBot"
 [[pages]]
 path = "aboutus.py"
 name = "About Us"
+
+[[pages]]
+path = "privacy_policy.py"
+name = "Privacy Policy"
+
+[[pages]]
+path = "imprint.py"
+name = "Imprint"
