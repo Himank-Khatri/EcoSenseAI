@@ -18,7 +18,7 @@ st.sidebar.markdown("---")
 nav = get_nav_from_toml(".streamlit/pages.toml")
 pg = st.navigation(nav) 
 
-st.logo("logo.png")
+st.logo("images/logo.png")
 
 add_page_title(pg)
 

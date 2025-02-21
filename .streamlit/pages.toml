@@ -7,3 +7,7 @@ name = "EcoSense"
 [[pages]]
 path = "chatbot.py"
 name = "EcoBot"
+
+[[pages]]
+path = "aboutus.py"
+name = "About Us"
