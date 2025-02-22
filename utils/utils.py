@@ -11,7 +11,7 @@ from weather import fetch_weather_data, interpret_weather_code
 from src.pipeline.prediction_pipeline import recursive_forecast
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-GROQ_API_KEY = "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"
+GROQ_API_KEY = ""
 
 # ----------------------- Model Loading -----------------------
 def load_best_model(artifacts_dir="artifacts/"):
