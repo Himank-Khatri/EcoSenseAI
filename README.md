@@ -2,7 +2,7 @@
 
 ## Overview
 
-EcoSenseAI is a Streamlit application that provides real-time air quality information and AI-powered insights. It displays air quality index (AQI) data, pollutant levels, and weather conditions to help users understand the current air quality and take necessary precautions.
+EcoSenseAI is an application that provides real-time air quality information and AI-powered insights. It displays air quality index (AQI) data, pollutant levels, and weather conditions to help users understand the current air quality and take necessary precautions.
 
 ## Features
 
