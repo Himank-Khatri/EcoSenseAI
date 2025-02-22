@@ -1,7 +1,7 @@
 import streamlit as st
 from st_pages import add_page_title, get_nav_from_toml
 
-st.set_page_config(page_title='EcoSenseAI', layout='wide')
+st.set_page_config(page_title='EcoSenseAI', layout='wide', page_icon='images/logo.png')
 st.markdown("""
     <style>
         /* Reduce top padding for the main content */

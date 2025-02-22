@@ -2,26 +2,23 @@ import os
 import streamlit as st
 import ollama
 
-# Enable GPU for Ollama
 os.environ["OLLAMA_USE_GPU"] = "1"
 
-# Set up Streamlit app
-st.set_page_config(page_title="EcoBot - Your Climate Companion", layout="wide")
+# st.set_page_config(page_title="EcoBot - Your Climate Companion", layout="wide")
 
 # Layout with image and title
 col1, col2 = st.columns([1, 5])
 with col1:
-    st.image(r"C:\Users\Farhan\Downloads\Screenshot_2025-02-20_120503-removebg-preview.png", width=150)  # Custom logo on the left
+    st.image("images/logo.png", width=150) 
 with col2:
-    st.title("EcoBot - Your Climate Companion ")
+    st.title("Your Climate Companion ")
     # st.markdown("""
     # ### 
     # """)
 
-# Divider
+
 st.markdown("---")
 
-# System Prompt (Defines Bot’s Knowledge)
 system_prompt = """
 You are a highly knowledgeable AI assistant specializing in climate science, air quality, and environmental sustainability.
 Your goal is to provide accurate, science-backed, and up-to-date information.
@@ -43,7 +40,6 @@ Your goal is to provide accurate, science-backed, and up-to-date information.
 - Avoid opinions—stick to evidence-based knowledge.
 """
 
-# Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "system", "content": system_prompt},
@@ -51,10 +47,10 @@ if "messages" not in st.session_state:
 
     ]
 
-# Display chat history (excluding system prompt)
+
 for msg in st.session_state.messages:
     if msg["role"] == "system":
-        continue  # Skip system prompt from display
+        continue  
     with st.chat_message(msg["role"]):
         if "<think>" in msg["content"]:
             response_parts = msg["content"].split("</think>")
@@ -66,18 +62,14 @@ for msg in st.session_state.messages:
         else:
             st.markdown(msg["content"])
 
-# User input
 user_input = st.chat_input("Type your message...")
 
 if user_input:
-    # Append user input to chat history
     st.session_state.messages.append({"role": "user", "content": user_input})
 
-    # Display user input in chat
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Get response from Ollama model
     with st.spinner("Thinking..."):
         try:
             response = ollama.chat(model="my-llama3", messages=st.session_state.messages)
@@ -85,10 +77,8 @@ if user_input:
         except Exception as e:
             bot_response = f"⚠ Error: {str(e)}"
 
-    # Append bot response to chat history
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
 
-    # Display bot response in chat
     with st.chat_message("assistant"):
         if "<think>" in bot_response:
             response_parts = bot_response.split("</think>")
