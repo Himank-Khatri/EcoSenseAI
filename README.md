@@ -67,6 +67,41 @@ The machine learning models used for AQI prediction are trained using the notebo
 4.  Model evaluation and hyperparameter tuning.
 5.  Saving the trained models to the `artifacts/` directory.
 
+# Running the ChatBot Locally
+
+## Prerequisites
+- Install **Ollama**: [https://ollama.ai](https://ollama.ai)
+- Ensure your system meets the requirements for running Llama-based models.
+
+## Steps to Run a Custom Model
+
+### 1. Verify the Existing `Modelfile`
+Ensure you already have a `modelfile1` .
+Add the modelfile and the .gguf model to the same folder
+Model Download - https://mega.nz/folder/cJBymZQD#LP244FLEQW5W8icQPIiwNA
+
+### 2. Build the Model
+Run the following command in the terminal:
+
+```sh
+ollama create my-custom-model -f modelfile1
+```
+
+This will create a model named `my-custom-model`.
+
+### 3. Manage Models
+- List installed models:
+
+  ```sh
+  ollama list
+  ```
+
+- If the model fails to load, check logs or rebuild it.
+
+### 4. Run the ChatBot
+Once the model is loaded, go to the chatbot, and viola, the chatbot will run locally on your own machine!
+
+
 ## AI Insights
 
 The application uses the Groq API to generate AI insights and recommendations based on the current AQI, pollutant levels, and weather conditions. To use this feature, you need to set up a Groq API key.
