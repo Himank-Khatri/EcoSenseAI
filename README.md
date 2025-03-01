@@ -26,7 +26,7 @@ EcoSenseAI is an application that provides real-time air quality information and
 1.  Clone the repository:
 
     ```bash
-    git clone <repository_url>
+    git clone [<repository_url>](https://github.com/Himank-Khatri/IGP-EcoSenseAI)
     ```
 2.  Navigate to the project directory:
 
