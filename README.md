@@ -12,6 +12,10 @@ EcoSenseAI is an application that provides real-time air quality information and
 - **Weather Information:** Displays current weather conditions, including temperature, humidity, and precipitation.
 - **Interactive Graphs:** Renders interactive graphs of AQI data over time, including observed and predicted values.
 
+## Screenshot
+![EcoSense](https://github.com/user-attachments/assets/8575b793-94c6-4ebf-bc20-8bb5aef36e2c)
+
+
 ## Technologies Used
 
 - **Streamlit:** A Python library for creating interactive web applications.
