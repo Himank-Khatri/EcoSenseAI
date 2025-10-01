@@ -12,6 +12,6 @@ streamlit
 st-pages
 groq
 folium
-stremalit_folium
+stremalit_folium==1.21.5
 ollama
 # -e .
